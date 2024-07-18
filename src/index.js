@@ -3,4 +3,9 @@ import connectDB from "./db/index.js";
 
 dotenv.config({ path: "./env"});
 
-connectDB();
+connectDB().then((res)=>{
+
+    app.listen(`${process.env.PORT} Server is Listening`)
+}).catch((err)=>{
+   console.log(err)
+});
