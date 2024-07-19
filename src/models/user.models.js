@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 const userSchema = new Schema(
     {
         userName:{
-            typeof:String,
+            type:String,
             required :true,
             lowercase:true,
             trim:true,
@@ -14,14 +14,14 @@ const userSchema = new Schema(
             index:true
         },
        email:{
-            typeof:String,
+            type:String,
             required :true,
             lowercase:true,
             trim:true,
             unique:true,
         },
        fullName:{
-            typeof:String,
+            type:String,
             required :true,
             trim:true,
             index:true
@@ -39,7 +39,6 @@ const userSchema = new Schema(
         },
         refreshTokens:{
             type:String,
-            required:true
         },
         watchHistory:{
             type :Schema.Types.ObjectId,
@@ -54,7 +53,7 @@ const userSchema = new Schema(
 userSchema.pre("save", async function (next){
     if(!this.isModified(this.password)) return next();
 
-    this.password = bcrypt.hash(this.password,10);
+    this.password = await bcrypt.hash(this.password,10);
     next();
     
 })
