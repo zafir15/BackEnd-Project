@@ -37,7 +37,7 @@ const userSchema = new Schema(
             type:String,
             required:[true , "Password Must be filled In"]
         },
-        refreshTokens:{
+        refreshToken:{
             type:String,
         },
         watchHistory:{
@@ -78,7 +78,7 @@ userSchema.methods.generateAccessTokens = function(){
 
     )
 }
-userSchema.methods.generateRefreshTokens = function(){
+userSchema.methods.generateRefreshToken = function(){
     jwt.sign(
         {
             _id : this.id ,

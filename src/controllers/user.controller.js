@@ -9,7 +9,7 @@ const generateAccessTokenAndRefreshToken = async(userId)=>{
         
         const user = await User.findById(userId)
         const accessToken = user.generateAccessTokens()
-        const refreshToken = user.generateRefreshTokens()
+        const refreshToken = user.generateRefreshToken()
 
         user.refreshToken = refreshToken
 
@@ -66,7 +66,7 @@ const registerUser = asyncHandler(async (req, res) => {
             userName:userName.toLowerCase()
      })
      
-     const createdUser = await User.findById(user._id).select("-password -refreshTokens")
+     const createdUser = await User.findById(user._id).select("-password -refreshToken")
 
      if(!createdUser){
         throw new APiError(505 , "Something went wrong while registering the user")
@@ -105,7 +105,7 @@ if (!(userName||email)) {
     const {accessToken , refreshToken} = generateAccessTokenAndRefreshToken(user._id)
 
 
-    const loggedIn = await User.findOne(user._id).select("-password -refreshTokens")
+    const loggedIn = await User.findOne(user._id).select("-password -refreshToken")
 
     const options = {
         httpOnly :true,
@@ -124,4 +124,29 @@ if (!(userName||email)) {
         )
 })
 
-export { registerUser , loginUser};
+const logoutUser = asyncHandler(async(req , res)=>{
+   await User.findByIdAndUpdate(
+        req.user._id,{
+            $set:{
+                refreshToken : undefined
+            }
+        },{
+
+            new :true
+        }
+    )
+
+    const options = {
+        httpOnly :true,
+        secure:ture
+    }
+
+    return res
+    .status(200)
+    .clearCookie("accessToken" , options)
+    .clearCookie("refreshToken" , options)
+    .json(new ApiResponse(200 , {} , "User Logged Out"))
+})
+
+export { registerUser , loginUser ,logoutUser};
+ 
